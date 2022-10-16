@@ -81,8 +81,10 @@ func (p *Provider) AppendRecords(ctx context.Context, zone string, records []lib
 
 	for _, record := range records {
 		rrttl := ""
-		if record.TTL != time.Duration(0) {
+		if record.TTL != time.Duration(0) && record.TTL >= 3600*time.Second {
 			rrttl = fmt.Sprintf("&rrttl=%d", int64(record.TTL/time.Second))
+		} else {
+			rrttl = fmt.Sprintf("&rrttl=%d", int64(3600))
 		}
 
 		rrdistance := ""
@@ -156,8 +158,10 @@ func (p *Provider) SetRecords(ctx context.Context, zone string, records []libdns
 	client := &http.Client{}
 	for _, record := range changedRecords {
 		rrttl := ""
-		if record.TTL != time.Duration(0) {
+		if record.TTL != time.Duration(0) && record.TTL >= 3600*time.Second {
 			rrttl = fmt.Sprintf("&rrttl=%d", int64(record.TTL/time.Second))
+		} else {
+			rrttl = fmt.Sprintf("&rrttl=%d", int64(3600))
 		}
 
 		rrdistance := ""
