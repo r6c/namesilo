@@ -7,6 +7,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -244,6 +245,7 @@ func doHttpRequestWithXmlResponse(client *http.Client, req *http.Request, resp i
 }
 
 func zoneToDomain(zone string) string {
+	log.Println("[debug]", zone)
 	return strings.TrimSuffix(zone, ".")
 }
 
