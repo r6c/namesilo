@@ -1,4 +1,4 @@
-// Package libdnsnamesilo implements a DNS record management client compatible
+// Package namesilo implements a DNS record management client compatible
 // with the libdns interfaces for Namesilo.
 package namesilo
 
@@ -30,7 +30,8 @@ type reply struct {
 
 // GetRecords lists all the records in the zone.
 func (p *Provider) GetRecords(ctx context.Context, zone string) ([]libdns.Record, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiEndpoint+"dnsListRecords?version=1&type=xml&key="+p.APIToken+"&domain="+zoneToDomain(zone), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiEndpoint+"dnsListRecords?version=1&type=xml&key="+
+		p.APIToken+"&domain="+zoneToDomain(zone), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,12 +62,11 @@ func (p *Provider) GetRecords(ctx context.Context, zone string) ([]libdns.Record
 
 	for _, record := range response.Records {
 		records = append(records, libdns.Record{
-			ID:       record.ID,
-			Type:     record.Type,
-			Name:     record.Name,
-			Value:    record.Value,
-			TTL:      time.Duration(record.TTL) * time.Second,
-			Priority: uint(record.Priority),
+			ID:    record.ID,
+			Type:  record.Type,
+			Name:  record.Name,
+			Value: record.Value,
+			TTL:   time.Duration(record.TTL) * time.Second,
 		})
 	}
 
@@ -90,7 +90,13 @@ func (p *Provider) AppendRecords(ctx context.Context, zone string, records []lib
 			rrdistance = fmt.Sprintf("&rrdistance=%d", record.Priority)
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiEndpoint+"dnsAddRecord?version=1&type=xml&key="+p.APIToken+"&domain="+zoneToDomain(zone)+"&rrtype="+record.Type+"&rrhost="+record.Name+"&rrvalue="+record.Value+rrttl+rrdistance, nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet,
+			apiEndpoint+"dnsAddRecord?version=1&type=xml&key="+
+				p.APIToken+"&domain="+zoneToDomain(zone)+
+				"&rrtype="+record.Type+
+				"&rrhost="+record.Name+
+				"&rrvalue="+record.Value+rrttl+rrdistance,
+			nil)
 		if err != nil {
 			return appendedRecords, err
 		}
